@@ -15,4 +15,4 @@ class TestRunner(TestCase):
             expected_mode = 0o100660
             os.chmod(str(file_path), expected_mode)
 
-            self.assertTrue(file_path.stat().st_mode == expected_mode)
+            self.assertEqual(file_path.stat().st_mode, expected_mode)
