@@ -1,0 +1,51 @@
+name: Test Matrix
+
+on:
+  pull_request:
+
+env:
+  INSTALL_EDM_VERSION: 3.4.0
+  PYTHONUNBUFFERED: 1
+
+concurrency:
+  # These lines should have the effect of cancelling CI runs for
+  # existing commits when a new commit is pushed to the PR.
+  # This should only affect the current workflow on each individual
+  # PR branch
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-unittests:
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 6
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup EDM
+        uses: enthought/setup-edm-action@v2
+        with:
+          edm-version: ${{ env.INSTALL_EDM_VERSION }}
+
+      - name: Cache EDM packages
+        uses: actions/cache@v3
+        env:
+          cache-name: fiber_streaming_edm_pkgs
+        with:
+          path: |
+            ~/.cache
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: Create testing environment
+        run: edm install -e testing-py38 --version 3.8 -y
+
+      - name: Install dependencies from pip
+        run: edm run -e testing-py38 -- pip install -r requirements.txt
+
+      - name: Run tests
+        run: edm run -e testing-py38 -- python -m unittest discover .
