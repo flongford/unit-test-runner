@@ -9,7 +9,7 @@ class TestRunner(TestCase):
     """Boilerplate code to add tests to"""
 
     def test_change_file_permissions_chmod(self):
-        for expected_mode in [0o620, 0o640, 0o660]:
+        for expected_mode in [0o620, 0o640, 0o660, 0o666]:
             with self.subTest(oct(expected_mode)):
                 tmp_file_fd, tmp_file_path = mkstemp(suffix="file.yaml")
                 os.close(tmp_file_fd)
