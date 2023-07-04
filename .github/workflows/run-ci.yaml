@@ -42,7 +42,7 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: Create testing environment
-        run: edm install -e testing-py38 --version 3.8
+        run: edm install -e testing-py38 --version 3.8 -y
 
       - name: Install dependencies from pip
         run: edm run -e testing-py38 -- pip install -r requirements.txt
